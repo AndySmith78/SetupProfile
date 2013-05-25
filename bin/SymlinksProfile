@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+require File.expand_path("../../app/create_symlink", __FILE__)
+results = CreateSymlink.start(*ARGV)
+puts CreateSymlink.report
