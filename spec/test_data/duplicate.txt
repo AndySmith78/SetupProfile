@@ -1,1 +1,1 @@
-dup
+This file is a duplicate
