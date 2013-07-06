@@ -4,30 +4,30 @@ class Profile
   end
 
   def execute
-    remove_old_symlinks
-    files = remove_existing_files
-    create_symlinks(files)
+    prepare_folder
+    create_symlinks(@files)
   end
   
-  def remove_old_symlinks
+  def prepare_folder
     Dir.foreach(path) do |file|
-      if File.symlink?("#{path}/../#{file}")
-        system("rm #{path}/../#{file}")
-      end
+      remove_old_symlinks(file)
+      remove_existing_files(file)
     end
   end
 
-  def remove_existing_files
-    @files = []
-    @existing_files = []
-    Dir.foreach(path) do |file|
-      if File.exist?("#{path}/../#{file}") 
-        puts "The #{file} already exists"
-      else
-        @files << file
-      end
+  def remove_old_symlinks(file)
+    if File.symlink?("#{path}/../#{file}")
+      system("rm #{path}/../#{file}")
     end
-    return @files
+  end
+
+  def remove_existing_files(file)
+    @files = []
+    if File.exist?("#{path}/../#{file}")
+      puts "The #{file} already exists"
+    else
+      @files << file
+    end
   end
 
   def create_symlinks(files)

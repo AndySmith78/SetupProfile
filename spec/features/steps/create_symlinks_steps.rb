@@ -18,10 +18,6 @@ steps_for :create_symlinks do
   step 'I run the create symlink command with folder 3' do
     CreateSymlink.start 'test_data/profile3'
   end
-  
-  step 'I run the create symlink command' do
-
-  end
 
   step 'I should have symlinks created for each file in the directory' do
     Dir.foreach('spec/test_data/profile') do |file|

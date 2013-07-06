@@ -3,42 +3,63 @@ require File.expand_path("../../lib/profile", __FILE__)
 
 describe Profile do
   describe '#execute' do
-    it 'should create a new instance of profile class' do
-      profile = Profile.new('folder')
-      Profile.any_instance.should_receive(:remove_old_symlinks)
-      Profile.any_instance.should_receive(:remove_existing_files)
+    let(:profile) { Profile.new 'some_folder' }
+    it 'should call prepare_folder and then create_symlinks' do
+      Profile.any_instance.should_receive(:prepare_folder)
       Profile.any_instance.should_receive(:create_symlinks)
       profile.execute
     end
   end
   
-  describe "#remove_old_symlinks" do
-    it 'should remove symlinks for old files' do
-      path = "spec/test_data/profile2"
-      file = 'not_duplicate.txt'
-
-      profile = Profile.new 'spec/test_data/profile2'
+  describe '#prepare_folder' do
+    let(:profile) { Profile.new 'spec/test_data/profile2' }
+    before :each do
       profile.stub(:path).and_return('spec/test_data/profile2')
-      
-      File.symlink("#{path}/#{file}", "#{path}/../#{file}")
-      profile.remove_old_symlinks
+    end 
 
-      File.symlink?("spec/test_data/#{file}").should be_false
+    it 'makes a call remove old symlinks for each file in directory' do
+      profile.stub(:remove_existing_files).and_return(true)
+ 
+      Profile.any_instance.should_receive(:remove_old_symlinks).exactly(4).times
+      profile.prepare_folder
+    end
+
+    it 'makes a call to remove existing files for each file in directory' do
+      profile.stub(:remove_old_symlinks).and_return(true)
+ 
+      Profile.any_instance.should_receive(:remove_existing_files).exactly(4).times
+      profile.prepare_folder
     end
   end
 
-  describe '#remove_existing_files' do
-    it "should return only files that do not exist in target folder" do
-      profile = Profile.new 'test_data/profile2'
+  describe "#remove_old_symlinks" do
+    let(:profile) { Profile.new 'some_folder' }
+    it 'removes symlinks for old files' do
+      File.symlink("spec/test_data/profile2/not_duplicate.txt", "spec/test_data/not_duplicate.txt")
       profile.stub(:path).and_return('spec/test_data/profile2')
-      files = profile.remove_existing_files
-      files.should == ["not_duplicate.txt"]
+      profile.remove_old_symlinks("not_duplicate.txt")
+
+      File.symlink?("spec/test_data/not_duplicate.txt").should == false
+    end
+
+  end
+
+  describe '#remove_existing_files' do
+    let(:profile) { Profile.new 'some_folder' }
+
+    it "return a file if it does not exist" do
+      profile.remove_existing_files('file.txt').should == ['file.txt']
+    end
+
+    it "not return the file if it does exist" do
+      profile.remove_existing_files('duplicate.txt').should_not == ['file.txt']
     end
   end
 
   describe '#create_symlinks' do
+    let(:profile) { Profile.new 'spec/test_data/profile' }
+
     it 'should create symlinks for files in a directory' do
-      profile = Profile.new 'spec/test_data/profile'
       files = []
 
       Dir.foreach('spec/test_data/profile')do |file|
