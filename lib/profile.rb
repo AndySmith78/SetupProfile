@@ -1,4 +1,6 @@
 class Profile
+  attr_accessor :folder
+
   def initialize(folder)
     @folder = folder
   end
@@ -38,6 +40,6 @@ class Profile
   end
 
   def path
-    File.expand_path("~/#{@folder}")
+    File.expand_path("~/#{folder}")
   end
 end
