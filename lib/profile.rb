@@ -3,6 +3,7 @@ class Profile
 
   def initialize(folder)
     @folder = folder
+    @files = []
   end
 
   def execute
@@ -12,8 +13,10 @@ class Profile
   
   def prepare_folder
     Dir.foreach(path) do |file|
-      remove_old_symlinks(file)
-      remove_existing_files(file)
+      unless file == '.git'
+        remove_old_symlinks(file)
+        remove_existing_files(file)
+      end
     end
   end
 
@@ -24,7 +27,6 @@ class Profile
   end
 
   def remove_existing_files(file)
-    @files = []
     if File.exist?("#{path}/../#{file}")
       puts "The #{file} already exists"
     else
