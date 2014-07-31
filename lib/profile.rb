@@ -3,7 +3,6 @@ class Profile
 
   def initialize(folder)
     @folder = folder
-    @files = []
   end
 
   def execute
@@ -27,6 +26,7 @@ class Profile
   end
 
   def remove_existing_files(file)
+    @files = []
     if File.exist?("#{path}/../#{file}")
       puts "The #{file} already exists"
     else
