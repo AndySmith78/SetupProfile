@@ -1,10 +1,10 @@
 require 'spec_helper'
 
-describe CreateSymlink do
+describe SymlinkCreator do
   describe '##start' do
     it 'make a call setup profile command' do
       Profile.any_instance.should_receive(:execute).once
-      CreateSymlink.start 'folder'
+      SymlinkCreator.start 'folder'
     end
   end
 end

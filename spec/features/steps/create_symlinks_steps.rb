@@ -12,11 +12,11 @@ steps_for :create_symlinks do
   end
 
   step 'I run the create symlink command' do
-    CreateSymlink.start 'test_data/profile'
+    SymlinkCreator.start 'test_data/profile'
   end
   
   step 'I run the create symlink command with folder 3' do
-    CreateSymlink.start 'test_data/profile3'
+    SymlinkCreator.start 'test_data/profile3'
   end
 
   step 'I should have symlinks created for each file in the directory' do

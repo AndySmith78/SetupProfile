@@ -1,5 +1,5 @@
 require File.expand_path("../../lib/profile", __FILE__)
-module CreateSymlink
+module SymlinkCreator
   def self.start(folder)
     profile = Profile.new(folder)
     profile.execute
