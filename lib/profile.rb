@@ -11,6 +11,7 @@ class Profile
   end
   
   def prepare_folder
+    @files = []
     Dir.foreach(path) do |file|
       unless file == '.git'
         remove_old_symlinks(file)
@@ -26,7 +27,6 @@ class Profile
   end
 
   def remove_existing_files(file)
-    @files = []
     if File.exist?("#{path}/../#{file}")
       puts "The #{file} already exists"
     else
