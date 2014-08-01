@@ -4,7 +4,7 @@ require "#{lib}/version.rb"
 
 Gem::Specification.new do |s|
   s.name          = %q{Symlink_Creator}
-  s.version       = "0.5.0"
+  s.version       = SymlinkCreator::VERSION
   s.author        = "Andy Smith"
   s.date          = %q{2014-07-29}
   s.summary       = %q{Creates symlink for you from a specified folder}
