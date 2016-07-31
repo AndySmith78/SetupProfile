@@ -6,7 +6,6 @@ describe Profile do
     let(:profile) { Profile.new 'some_folder' }
     it 'should call prepare_folder and then create_symlinks' do
       Profile.any_instance.should_receive(:prepare_folder)
-      Profile.any_instance.should_receive(:create_symlinks)
       profile.execute
     end
   end
@@ -18,7 +17,7 @@ describe Profile do
     end 
 
     it 'makes a call remove old symlinks for each file in directory' do
-      profile.stub(:remove_existing_files).and_return(true)
+      profile.stub(:check_for_existing_file).and_return(true)
  
       Profile.any_instance.should_receive(:remove_old_symlinks).exactly(4).times
       profile.prepare_folder
@@ -27,7 +26,7 @@ describe Profile do
     it 'makes a call to remove existing files for each file in directory' do
       profile.stub(:remove_old_symlinks).and_return(true)
  
-      Profile.any_instance.should_receive(:remove_existing_files).exactly(4).times
+      Profile.any_instance.should_receive(:check_for_existing_file).exactly(4).times
       profile.prepare_folder
     end
   end
@@ -41,42 +40,34 @@ describe Profile do
 
       File.symlink?("spec/test_data/not_duplicate.txt").should == false
     end
-
   end
 
-  describe '#remove_existing_files' do
+  describe '#check_for_existing_file' do
     let(:profile) { Profile.new 'some_folder' }
 
-    it "return a file if it does not exist" do
-      profile.remove_existing_files('file.txt').should == ['file.txt']
+    it "call create symlinks if file does not exist" do
+      profile.should_receive(:create_symlinks).with('file.txt')
+      profile.check_for_existing_file('file.txt')
     end
 
     it "not return the file if it does exist" do
-      profile.remove_existing_files('duplicate.txt').should_not == ['file.txt']
+      profile.should_not_receive(:create_symlinks).with('file.txt')
+      profile.check_for_existing_file('duplicate.txt')
     end
   end
 
   describe '#create_symlinks' do
     let(:profile) { Profile.new 'spec/test_data/profile' }
 
-    it 'should create symlinks for files in a directory' do
-      files = []
+    it 'should create symlinks for files' do
+      profile.stub(:path).and_return('spec/test_data/profile')
+      file = 'Untitled.rft'
 
-      Dir.foreach('spec/test_data/profile')do |file|
-        unless file == '.' || '..'
-          files << file
-        end
-      end
-
-      profile.create_symlinks(files)
-      files.each do |file|
-        File.symlink?("spec/test_data/#{file}").should == true
-      end
+      profile.create_symlinks(file)
+      File.symlink?("spec/test_data/#{file}").should == true
 
       ## cleanup
-      files.each do |file|
-        system("rm 'spec/test_data/#{file}'")
-      end
+      system("rm 'spec/test_data/#{file}'")
     end
   end
 end

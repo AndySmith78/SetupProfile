@@ -7,15 +7,13 @@ class Profile
 
   def execute
     prepare_folder
-    create_symlinks(@files)
   end
   
   def prepare_folder
-    @files = []
     Dir.foreach(path) do |file|
       unless file == '.git'
         remove_old_symlinks(file)
-        remove_existing_files(file)
+        check_for_existing_file(file)
       end
     end
   end
@@ -26,22 +24,22 @@ class Profile
     end
   end
 
-  def remove_existing_files(file)
+  def check_for_existing_file(file)
     if File.exist?("#{path}/../#{file}")
       puts "The #{file} already exists"
     else
-      @files << file
+      create_symlinks(file)
     end
   end
 
-  def create_symlinks(files)
-    files.each do |file|
-      File.symlink("#{path}/#{file}", "#{path}/../#{file}")
-      puts "symlink created for #{file}"
-    end
+  def create_symlinks(file)
+    File.symlink("#{path}/#{file}", "#{path}/../#{file}")
+    puts "symlink created for #{file}"
   end
+
+  private
 
   def path
-    File.expand_path("~/#{folder}")
+    File.expand_path("~/#{@folder}")
   end
 end
